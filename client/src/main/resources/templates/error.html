@@ -1,0 +1,11 @@
+{#include template.html}
+	{#body}
+		<div class="card border-danger shadow m-auto w-50">
+			<div class="card-header bg-danger-subtle fw-bold">Oh no! 😱</div>
+			<div class="card-body text-danger">
+				<h5 class="card-title">{error}</h5>
+				<p class="card-text">{errorDescription ?: ''}</p>
+			</div>
+		</div>
+	{/body}
+{/include}

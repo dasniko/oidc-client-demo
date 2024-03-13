@@ -1,0 +1,60 @@
+{#include template.html}
+	{#body}
+		<div class="row g-4">
+			<div class="col-12">
+				<div class="card shadow h-100">
+					<div class="card-body">
+						<h1>Hello {identity.name ?: 'Anonymous'} 😎!</h1>
+					</div>
+				</div>
+			</div>
+			<div class="col-6">
+				<div class="card shadow h-100">
+					<div class="card-header">
+						<h5>ID Token</h5>
+					</div>
+					<div class="card-body text-primary small">
+						<pre>{idTokenPayload}</pre>
+					</div>
+				</div>
+			</div>
+			<div class="col-6">
+				<div class="card shadow h-100">
+					<div class="card-header">
+						<h5>Access Token</h5>
+					</div>
+					<div class="card-body text-info small">
+						<pre>{accessTokenPayload}</pre>
+					</div>
+				</div>
+			</div>
+			<div class="col-6">
+				<div class="card shadow h-100">
+					<div class="card-header">
+						<h5>Identity</h5>
+					</div>
+					<div class="card-body small">
+						<code>{identity}</code>
+					</div>
+				</div>
+			</div>
+			<div class="col-6">
+				<div class="card shadow h-100">
+					<div class="card-header">
+						<h5>Refresh Token</h5>
+					</div>
+					<div class="card-body text-muted small">
+						<pre>{refreshTokenPayload}</pre>
+					</div>
+				</div>
+			</div>
+			<div class="col-12">
+				<div class="card shadow">
+					<div class="card-body text-success">
+						<h3>{quote ?: ''}</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/body}
+{/include}
