@@ -4,9 +4,7 @@ Demo repository for implementing an OIDC client from scratch.
 
 For development purposes during @dasniko's Training [OAuth2 & OIDC for Java developers](https://www.n-k.de/trainings/oauth21-und-oidc-fuer-entwickler/) only.
 
-> Detailed resources are available right before the training starts...
-Please be patient and come back at proper time.  
-In the meantime, please prepare yourself with the following:
+Please prepare yourself upfront of the training with the following:
 
 ## Technical Prerequisites
 
@@ -22,3 +20,14 @@ In the meantime, please prepare yourself with the following:
 
 * _Clone_ this repository to your local machine or download it [here](https://github.com/dasniko/oidc-client-demo/archive/refs/heads/main.zip).
 * Pull the official Keycloak image `quay.io/keycloak/keycloak:24.0`
+
+This project uses Quarkus, the Supersonic Subatomic Java Framework.
+
+If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+
+## Running the application in dev mode
+
+You can run your application in dev mode that enables live coding using:
+```shell script
+./mvnw compile quarkus:dev
+```
