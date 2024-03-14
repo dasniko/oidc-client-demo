@@ -22,12 +22,17 @@ public class ApplicationState {
 
 	@Getter
 	Map<String, Object> openidConfig;
+	@Getter
+	Map<String, Object> jsonWebKeySet;
 
 	void onStart(@Observes StartupEvent event) {
-		// TODO implement me!
 		log.info("Starting application, loading OIDC configuration...");
 		openidConfig = idpService.getOpenidConfiguration();
 		log.debug("Received OIDC config: {}", openidConfig);
+
+		String jwksUri = getEndpointPathFromConfig("jwks_uri");
+		jsonWebKeySet = idpService.getJsonWebKeySet(jwksUri);
+		log.debug("Received JWKS: {}", jsonWebKeySet);
 	}
 
 	String getEndpointPathFromConfig(String key) {
