@@ -23,6 +23,10 @@ public class QuotesResource {
 	@Inject
 	@RestClient
 	ApiService apiService;
+	@Inject
+	SessionState session;
+	@Inject
+	JwtService jwtService;
 
 	@GET
 	public TemplateInstance getQuote() {
@@ -39,7 +43,10 @@ public class QuotesResource {
 		}
 
 		Map<String, Object> data = Map.of(
-			"identity", "???",
+			"identity", session.getIdentity(),
+			"idTokenPayload", jwtService.getParsedPayload(session.getIdToken()),
+			"accessTokenPayload", jwtService.getParsedPayload(session.getAccessToken()),
+			"refreshTokenPayload", jwtService.getParsedPayload(session.getRefreshToken()),
 			"quote", apiQuote
 		);
 		return index.data(data);

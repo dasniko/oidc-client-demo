@@ -74,11 +74,14 @@ public class SecurityContainerRequestFilter implements ContainerRequestFilter {
 
 			String idTokenString = (String) tokenResponse.get("id_token");
 			JsonWebToken idToken = jwtService.verify(idTokenString);
-			if (!idToken.getIssuer().equals(iss) || !idToken.getIssuer().equals(app.getOpenidConfig().get("iss"))) {
+			if (!idToken.getIssuer().equals(iss) || !idToken.getIssuer().equals(app.getOpenidConfig().get("issuer"))) {
 				throw new RuntimeException("invalid issuer");
 			}
 
 			session.setIdentity(Identity.fromIdToken(idToken));
+			session.setIdToken(idTokenString);
+			session.setAccessToken((String) tokenResponse.get("access_token"));
+			session.setRefreshToken((String) tokenResponse.get("refresh_token"));
 
 			return Response.status(Response.Status.FOUND).location(info.getBaseUri()).build();
 		} catch (WebApplicationException e) {
