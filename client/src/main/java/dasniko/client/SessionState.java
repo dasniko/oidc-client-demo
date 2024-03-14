@@ -10,4 +10,5 @@ import java.io.Serializable;
 @Setter
 @SessionScoped
 public class SessionState implements Serializable {
+	private Identity identity;
 }
