@@ -1,15 +1,23 @@
 package dasniko.client;
 
+import io.quarkus.qute.Template;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+import javax.security.auth.login.CredentialExpiredException;
 import java.net.URI;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -24,18 +32,62 @@ public class SecurityContainerRequestFilter implements ContainerRequestFilter {
 	jakarta.inject.Provider<Config> config;
 	@Inject
 	UriInfo info;
+	@Inject
+	@RestClient
+	jakarta.inject.Provider<IdpService> idpService;
+	@Inject
+	JwtService jwtService;
+	@Inject
+	Template error;
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) {
 		// TODO implement me!
 
 		Response response = null;
-		if (session.getIdentity() == null) {
+		MultivaluedMap<String, String> queryParameters = info.getQueryParameters();
+		if (queryParameters.containsKey("iss") && queryParameters.containsKey("code")) {
+			String iss = queryParameters.getFirst("iss");
+			String code = queryParameters.getFirst("code");
+			response = codeToToken(iss, code);
+		} else if (session.getIdentity() == null) {
 			response = redirectToAuthorizationEndpoint();
 		}
 
 		if (response != null) {
 			requestContext.abortWith(response);
+		}
+	}
+
+	private Response codeToToken(String iss, String code) {
+		try {
+			TokenForm form = new TokenForm();
+			form.setGrantType("authorization_code");
+			form.setCode(code);
+			form.setClientId(config.get().clientId());
+			form.setClientSecret(config.get().clientSecret());
+			form.setRedirectUri(String.valueOf(info.getBaseUri()));
+
+			String tokenPath = app.getEndpointPathFromConfig("token_endpoint");
+			Map<String, Object> tokenResponse = idpService.get().getToken(tokenPath, form);
+			log.debug("Received token response: {}", tokenResponse);
+
+			String idTokenString = (String) tokenResponse.get("id_token");
+			JsonWebToken idToken = jwtService.verify(idTokenString);
+			if (!idToken.getIssuer().equals(iss) || !idToken.getIssuer().equals(app.getOpenidConfig().get("iss"))) {
+				throw new RuntimeException("invalid issuer");
+			}
+
+			session.setIdentity(Identity.fromIdToken(idToken));
+
+			return Response.status(Response.Status.FOUND).location(info.getBaseUri()).build();
+		} catch (WebApplicationException e) {
+			String reasonPhrase = e.getResponse().getStatusInfo().getReasonPhrase();
+			return Response.ok(error.data("error", reasonPhrase).render()).type(MediaType.TEXT_HTML).build();
+		} catch (CredentialExpiredException e) {
+			return redirectToAuthorizationEndpoint();
+		} catch (Exception e) {
+			return Response.ok(error.data("error", e.getMessage()).render()).type(MediaType.TEXT_HTML).build();
 		}
 	}
 
