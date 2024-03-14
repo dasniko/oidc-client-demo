@@ -12,11 +12,15 @@ import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.security.auth.login.CredentialExpiredException;
 import java.net.URI;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
 
@@ -42,7 +46,6 @@ public class SecurityContainerRequestFilter implements ContainerRequestFilter {
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) {
-		// TODO implement me!
 
 		Response response = null;
 		MultivaluedMap<String, String> queryParameters = info.getQueryParameters();
@@ -67,6 +70,7 @@ public class SecurityContainerRequestFilter implements ContainerRequestFilter {
 			form.setClientId(config.get().clientId());
 			form.setClientSecret(config.get().clientSecret());
 			form.setRedirectUri(String.valueOf(info.getBaseUri()));
+			form.setCodeVerifier(session.getCodeVerifier());
 
 			String tokenPath = app.getEndpointPathFromConfig("token_endpoint");
 			Map<String, Object> tokenResponse = idpService.get().getToken(tokenPath, form);
@@ -83,6 +87,8 @@ public class SecurityContainerRequestFilter implements ContainerRequestFilter {
 			session.setAccessToken((String) tokenResponse.get("access_token"));
 			session.setRefreshToken((String) tokenResponse.get("refresh_token"));
 
+			callUserInfoEndpoint();
+
 			return Response.status(Response.Status.FOUND).location(info.getBaseUri()).build();
 		} catch (WebApplicationException e) {
 			String reasonPhrase = e.getResponse().getStatusInfo().getReasonPhrase();
@@ -94,7 +100,17 @@ public class SecurityContainerRequestFilter implements ContainerRequestFilter {
 		}
 	}
 
+	private void callUserInfoEndpoint() {
+		String userInfoPath = app.getEndpointPathFromConfig("userinfo_endpoint");
+		Identity userInfo = idpService.get().getUserInfo(userInfoPath, session.getAccessToken());
+		log.debug("Received UserInfo: {}", userInfo);
+		if (userInfo != null) {
+			session.getIdentity().addUserinfo(userInfo);
+		}
+	}
+
 	private Response redirectToAuthorizationEndpoint() {
+		preparePkce();
 		String authorizationEndpointString = (String) app.getOpenidConfig().get("authorization_endpoint");
 		URI authorizationEndpoint = UriBuilder.fromUri(authorizationEndpointString)
 			.queryParam("response_type", "code")
@@ -102,8 +118,18 @@ public class SecurityContainerRequestFilter implements ContainerRequestFilter {
 			.queryParam("client_id", config.get().clientId())
 			.queryParam("redirect_uri", info.getBaseUri())
 			.queryParam("scope", "openid")
+			.queryParam("code_challenge_method", "S256")
+			.queryParam("code_challenge", session.getCodeChallenge())
 			.build();
 		return Response.status(Response.Status.FOUND).location(authorizationEndpoint).build();
+	}
+
+	private void preparePkce() {
+		String codeVerifier = RandomStringUtils.random(64, 0, 0, true, true, null, new SecureRandom());
+		byte[] sha256 = DigestUtils.sha256(codeVerifier);
+		String codeChallenge = Base64.getUrlEncoder().withoutPadding().encodeToString(sha256);
+		session.setCodeVerifier(codeVerifier);
+		session.setCodeChallenge(codeChallenge);
 	}
 
 }
