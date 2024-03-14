@@ -32,8 +32,7 @@ public class QuotesResource {
 	public TemplateInstance getQuote() {
 		String apiQuote;
 		try {
-			// TODO get valid access token
-			String accessToken = "????";
+			String accessToken = jwtService.getValidAccessToken().getRawToken();// session.getAccessToken();
 			Map<String, String> response = apiService.getData("Bearer " + accessToken);
 			apiQuote = response.get("quote");
 		} catch (WebApplicationException e) {

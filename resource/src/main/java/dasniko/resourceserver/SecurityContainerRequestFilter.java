@@ -31,6 +31,7 @@ public class SecurityContainerRequestFilter implements ContainerRequestFilter {
 				String tokenString = authorization.substring(7);
 				JsonWebToken token = jwtService.verify(tokenString);
 				// check token on further claims
+//				requestContext.setSecurityContext();
 			} catch (Exception e) {
 				response = Response.status(Response.Status.UNAUTHORIZED).entity(Map.of("error", e.getMessage()));
 			}

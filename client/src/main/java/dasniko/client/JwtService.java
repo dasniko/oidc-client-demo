@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.security.auth.login.CredentialExpiredException;
 import java.math.BigInteger;
@@ -28,6 +29,13 @@ public class JwtService {
 	ApplicationState app;
 	@Inject
 	JWTParser jwtParser;
+	@Inject
+	SessionState session;
+	@Inject
+	Config config;
+	@Inject
+	@RestClient
+	IdpService idpService;
 
 	JsonWebToken verify(String tokenString) throws Exception {
 		// find proper key
@@ -60,6 +68,34 @@ public class JwtService {
 		String payloadString = new String(Base64.getDecoder().decode(parts[1]));
 		Map<String, Object> payload = objectMapper.readValue(payloadString, new TypeReference<>() {});
 		return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(payload);
+	}
+
+	JsonWebToken getValidAccessToken() throws Exception {
+		JsonWebToken token;
+		try {
+			token = verify(session.getAccessToken());
+		} catch (CredentialExpiredException e) {
+			refreshToken();
+			token = verify(session.getAccessToken());
+		}
+		return token;
+	}
+
+	private void refreshToken() {
+		TokenForm form = new TokenForm();
+		form.setGrantType("refresh_token");
+		form.setClientId(config.clientId());
+		form.setClientSecret(config.clientSecret());
+		form.setRefreshToken(session.getRefreshToken());
+
+		String tokenPath = app.getEndpointPathFromConfig("token_endpoint");
+		Map<String, Object> tokenResponse = idpService.getToken(tokenPath, form);
+		// if response status = 401, then redirect user to auth-endpoint
+		log.debug("Received token response: {}", tokenResponse);
+
+		session.setIdToken((String) tokenResponse.get("id_token"));
+		session.setAccessToken((String) tokenResponse.get("access_token"));
+		session.setRefreshToken((String) tokenResponse.get("refresh_token"));
 	}
 
 }
