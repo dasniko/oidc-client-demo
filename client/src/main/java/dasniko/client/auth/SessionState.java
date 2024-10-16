@@ -1,4 +1,4 @@
-package dasniko.client;
+package dasniko.client.auth;
 
 import jakarta.enterprise.context.SessionScoped;
 import lombok.Getter;

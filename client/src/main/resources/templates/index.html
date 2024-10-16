@@ -14,7 +14,7 @@
 						<h5>ID Token</h5>
 					</div>
 					<div class="card-body text-primary small">
-						<pre>{idTokenPayload}</pre>
+						<pre>{idTokenPayload ?: 'n/a'}</pre>
 					</div>
 				</div>
 			</div>
@@ -23,8 +23,8 @@
 					<div class="card-header">
 						<h5>Access Token</h5>
 					</div>
-					<div class="card-body text-info small">
-						<pre>{accessTokenPayload}</pre>
+					<div class="card-body text-secondary-emphasis small">
+						<pre>{accessTokenPayload ?: 'n/a'}</pre>
 					</div>
 				</div>
 			</div>
@@ -34,7 +34,7 @@
 						<h5>Identity</h5>
 					</div>
 					<div class="card-body small">
-						<code>{identity}</code>
+						<code>{identity ?: 'n/a'}</code>
 					</div>
 				</div>
 			</div>
@@ -44,14 +44,14 @@
 						<h5>Refresh Token</h5>
 					</div>
 					<div class="card-body text-muted small">
-						<pre>{refreshTokenPayload}</pre>
+						<pre>{refreshTokenPayload ?: 'n/a'}</pre>
 					</div>
 				</div>
 			</div>
 			<div class="col-12">
 				<div class="card shadow">
 					<div class="card-body text-success">
-						<h3>{quote ?: ''}</h3>
+						<h3>{quote ?: 'n/a'}</h3>
 					</div>
 				</div>
 			</div>

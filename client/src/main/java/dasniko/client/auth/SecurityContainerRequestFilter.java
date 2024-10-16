@@ -1,4 +1,4 @@
-package dasniko.client;
+package dasniko.client.auth;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;

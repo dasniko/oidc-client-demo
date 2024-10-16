@@ -1,13 +1,17 @@
 package dasniko.client;
 
+import dasniko.client.api.ApiService;
+import dasniko.client.model.ApiResponse;
 import io.quarkus.qute.Template;
-import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -25,16 +29,18 @@ public class QuotesResource {
 	ApiService apiService;
 
 	@GET
-	public TemplateInstance getQuote() {
+	public Response getQuote() {
 		String apiQuote;
 		try {
 			// TODO get valid access token
 			String accessToken = "????";
-			Map<String, String> response = apiService.getData("Bearer " + accessToken);
-			apiQuote = response.get("quote");
+			ApiResponse response = apiService.getData("Bearer " + accessToken);
+			apiQuote = response.quote();
 		} catch (WebApplicationException e) {
+			log.error("WebApplicationException occurred while requesting quote from resource server.", e);
 			apiQuote = e.getResponse().getStatusInfo().getReasonPhrase();
 		} catch (Exception e) {
+			log.error("Exception occurred while trying to get a valid access_token", e);
 			apiQuote = e.getMessage();
 		}
 
@@ -42,7 +48,13 @@ public class QuotesResource {
 			"identity", "???",
 			"quote", apiQuote
 		);
-		return index.data(data);
+		return Response.ok(index.data(data).render()).build();
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public void dummy() {
+		// no-op
 	}
 
 }

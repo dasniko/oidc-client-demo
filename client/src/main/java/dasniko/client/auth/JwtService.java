@@ -1,4 +1,4 @@
-package dasniko.client;
+package dasniko.client.auth;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +18,7 @@ public class JwtService {
 	@Inject
 	ObjectMapper objectMapper;
 
-	JsonWebToken verify(String tokenString) throws Exception {
+	JsonWebToken verify(String tokenString) {
 		// TODO find proper key
 
 		// TODO create public key for verification

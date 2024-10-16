@@ -1,5 +1,6 @@
-package dasniko.client;
+package dasniko.client.auth;
 
+import dasniko.client.Config;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -21,11 +22,6 @@ public class ApplicationState {
 
 	void onStart(@Observes StartupEvent event) {
 		// TODO implement me!
-	}
-
-	String getEndpointPathFromConfig(String key) {
-		String endpoint = (String) openidConfig.get(key);
-		return endpoint.replace(config.baseUrl(), "");
 	}
 
 }
