@@ -23,17 +23,22 @@ If you want to learn more about Quarkus, please visit its website: https://quark
 
 ## Running the application in dev mode
 
-You can run your application in dev mode that enables live coding using:
+You can run both applications in dev mode that enables live coding using the following command from each folder (`client` and `resource`):
+
 ```shell script
-./mvnw compile quarkus:dev
+$ ../mvnw compile quarkus:dev
 ```
 
 ## Links
 
-* OAuth2, OIDC & JWT Basics slides:
+* 📺 OAuth2, OIDC & JWT Basics slides:
 	https://speakerdeck.com/dasniko/oauth2-oidc-and-jwt-important-basics
-* OAuth 2.1: https://oauth.net/2.1/
-* OIDC: https://openid.net/specs/openid-connect-core-1_0.html
+* 📺 Status Quo of OAuth 2:
+	https://speakerdeck.com/dasniko/status-quo-of-oauth-2
+* 📈 Sequenz-Diagramm [Authorization Code Grant OIDC](https://github.com/dasniko/keycloak-workshop/blob/main/Seq_Authorization_Code_Grant_OIDC.pdf)
+* 📈 Sequenz-Diagramm [PKCE for OAuth2](https://github.com/dasniko/keycloak-workshop/blob/main/Seq_PKCE_for_OAuth2.pdf)
+* 📖 OAuth 2.1: https://oauth.net/2.1/
+* 📖 OIDC: https://openid.net/specs/openid-connect-core-1_0.html
 
 ## Your trainer
 

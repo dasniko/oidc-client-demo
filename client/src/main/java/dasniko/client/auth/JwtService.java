@@ -28,9 +28,9 @@ public class JwtService {
 		return null;
 	}
 
-	// this is only for demo purposes, don't do this at home!
+	// this is only for demo purposes, DON'T DO THIS AT HOME!
 	@SneakyThrows
-	String getParsedPayload(String tokenString) {
+	public String getParsedPayload(String tokenString) {
 		String[] parts = tokenString.split("\\.");
 		String payloadString = new String(Base64.getDecoder().decode(parts[1]));
 		Map<String, Object> payload = objectMapper.readValue(payloadString, new TypeReference<>() {});
