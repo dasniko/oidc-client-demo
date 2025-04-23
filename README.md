@@ -35,8 +35,6 @@ $ ../mvnw compile quarkus:dev
 	https://speakerdeck.com/dasniko/oauth2-oidc-and-jwt-important-basics
 * 📺 Status Quo of OAuth 2:
 	https://speakerdeck.com/dasniko/status-quo-of-oauth-2
-* 📈 Sequenz-Diagramm [Authorization Code Grant OIDC](https://github.com/dasniko/keycloak-workshop/blob/main/Seq_Authorization_Code_Grant_OIDC.pdf)
-* 📈 Sequenz-Diagramm [PKCE for OAuth2](https://github.com/dasniko/keycloak-workshop/blob/main/Seq_PKCE_for_OAuth2.pdf)
 * 📖 OAuth 2.1: https://oauth.net/2.1/
 * 📖 OIDC: https://openid.net/specs/openid-connect-core-1_0.html
 
