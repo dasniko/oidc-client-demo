@@ -1,5 +1,6 @@
 package dasniko.client.auth;
 
+import dasniko.client.model.Identity;
 import jakarta.enterprise.context.SessionScoped;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,4 +11,5 @@ import java.io.Serializable;
 @Setter
 @SessionScoped
 public class SessionState implements Serializable {
+	private Identity identity;
 }
