@@ -26,6 +26,10 @@ public class JwtService {
 	ApplicationState app;
 	@Inject
 	JWTParser jwtParser;
+	@Inject
+	SessionState session;
+	@Inject
+	AuthManager authManager;
 
 	JsonWebToken verify(String tokenString) throws Exception {
 		// find proper key
@@ -45,6 +49,17 @@ public class JwtService {
 
 		// return token if valid
 		return jwtParser.verify(tokenString, publicKey);
+	}
+
+	public JsonWebToken getValidAccessToken() throws Exception {
+		JsonWebToken token = null;
+		try {
+			token = verify(session.getAccessToken());
+		} catch (Exception e) {
+			authManager.refreshToken();
+			token = verify(session.getAccessToken());
+		}
+		return token;
 	}
 
 	// this is only for demo purposes, DON'T DO THIS AT HOME!

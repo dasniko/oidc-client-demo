@@ -7,6 +7,7 @@ import dasniko.client.model.TokenForm;
 import dasniko.client.model.TokenResponse;
 import dasniko.client.model.UserInfoResponse;
 import io.quarkus.qute.Template;
+import io.quarkus.security.UnauthorizedException;
 import io.smallrye.jwt.auth.principal.ParseException;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -116,6 +117,27 @@ public class AuthManager {
 			}
 		} catch (Exception e) {
 			// noop
+		}
+	}
+
+	public void refreshToken() {
+		TokenForm form = new TokenForm();
+		form.setGrantType("refresh_token");
+		form.setClientId(config.clientId());
+		form.setClientSecret(config.clientSecret());
+		form.setRefreshToken(session.getRefreshToken());
+
+		try {
+			TokenResponse tokenResponse = idpClient.getToken(form);
+			session.setIdToken(tokenResponse.idToken());
+			session.setAccessToken(tokenResponse.accessToken());
+			session.setRefreshToken(tokenResponse.refreshToken());
+		} catch (WebApplicationException e) {
+			if (e.getResponse().getStatus() == 401) {
+				throw new UnauthorizedException();
+			} else {
+				throw e;
+			}
 		}
 	}
 }

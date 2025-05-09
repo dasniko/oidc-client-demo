@@ -38,8 +38,8 @@ public class QuotesResource {
 	public Response getQuote() {
 		String apiQuote;
 		try {
-			// TODO get valid access token
-			String accessToken = "????";
+			// get valid access token
+			String accessToken = jwtService.getValidAccessToken().getRawToken();
 			ApiResponse response = apiService.getData("Bearer " + accessToken);
 			apiQuote = response.quote();
 		} catch (WebApplicationException e) {
