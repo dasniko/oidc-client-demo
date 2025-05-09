@@ -17,9 +17,17 @@ public class JwtService {
 
 	@Inject
 	ObjectMapper objectMapper;
+	@Inject
+	ApplicationState app;
 
-	JsonWebToken verify(String tokenString) {
+	JsonWebToken verify(String tokenString) throws Exception {
 		// TODO find proper key
+		String[] parts = tokenString.split("\\.");
+		String headerString = new String(Base64.getDecoder().decode(parts[0]));
+		Map<String, String> header = objectMapper.readValue(headerString, new TypeReference<>() {});
+		String kid = header.get("kid");
+
+		Map<String, Object> key = app.getJsonWebKey(kid);
 
 		// TODO create public key for verification
 
