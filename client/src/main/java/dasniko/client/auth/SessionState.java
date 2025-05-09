@@ -16,4 +16,7 @@ public class SessionState implements Serializable {
 	private String idToken;
 	private String accessToken;
 	private String refreshToken;
+
+	private String codeVerifier;
+	private String codeChallenge;
 }
