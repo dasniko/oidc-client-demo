@@ -6,6 +6,7 @@ import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.Map;
@@ -16,6 +17,8 @@ public class SecurityContainerRequestFilter implements ContainerRequestFilter {
 
 	@Inject
 	JwtService jwtService;
+	@ConfigProperty(name = "idp.iss")
+	String iss;
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) {
@@ -29,6 +32,10 @@ public class SecurityContainerRequestFilter implements ContainerRequestFilter {
 			try {
 				String tokenString = authorization.substring(7);
 				JsonWebToken token = jwtService.verify(tokenString);
+				if (!iss.equals(token.getIssuer())) {
+					response = Response.status(Response.Status.UNAUTHORIZED)
+						.entity(Map.of("error", "wrong issuer"));
+				}
 			} catch (Exception e) {
 				response = Response.status(Response.Status.UNAUTHORIZED)
 					.entity(Map.of("error", e.getMessage()));
