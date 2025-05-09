@@ -1,5 +1,6 @@
 package dasniko.client.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dasniko.client.Config;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,6 +17,8 @@ public class ApplicationState {
 
 	@Inject
 	Config config;
+	@Inject
+	ObjectMapper objectMapper;
 
 	@Getter
 	Map<String, Object> openidConfig;

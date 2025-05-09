@@ -18,14 +18,14 @@ public class JwtService {
 	@Inject
 	ObjectMapper objectMapper;
 
-	JsonWebToken verify(String tokenString) {
+	JsonWebToken verify(String tokenString) throws Exception {
+		throw new IllegalStateException("Not implemented yet");
+
 		// TODO find proper key
 
 		// TODO create public key for verification
 
 		// TODO return token if valid
-
-		return null;
 	}
 
 	// this is only for demo purposes, DON'T DO THIS AT HOME!
