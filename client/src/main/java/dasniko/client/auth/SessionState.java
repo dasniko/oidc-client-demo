@@ -12,4 +12,8 @@ import java.io.Serializable;
 @SessionScoped
 public class SessionState implements Serializable {
 	private Identity identity;
+
+	private String idToken;
+	private String accessToken;
+	private String refreshToken;
 }
