@@ -13,6 +13,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -35,6 +36,11 @@ public class ApplicationState {
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
+	}
+
+	public Map<String, Object> getJsonWebKey(String kid) {
+		return ((List<Map<String, Object>>) getJsonWebKeySet().get("keys"))
+			.stream().filter(k -> k.get("kid").equals(kid)).findFirst().orElseThrow();
 	}
 
 }
