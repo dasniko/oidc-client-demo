@@ -69,6 +69,8 @@ public class AuthManager {
 				throw new IllegalStateException("Audience of ID token does not match the client ID.");
 			}
 
+			// call userinfo endpoint
+
 			session.setIdentity(Identity.fromIdToken(idToken));
 			session.setIdToken(idTokenString);
 			session.setAccessToken(tokenResponse.accessToken());

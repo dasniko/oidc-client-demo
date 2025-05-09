@@ -2,12 +2,17 @@ package dasniko.client.auth;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.smallrye.jwt.auth.principal.JWTParser;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import java.math.BigInteger;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.Map;
 
@@ -19,9 +24,11 @@ public class JwtService {
 	ObjectMapper objectMapper;
 	@Inject
 	ApplicationState app;
+	@Inject
+	JWTParser jwtParser;
 
 	JsonWebToken verify(String tokenString) throws Exception {
-		// TODO find proper key
+		// find proper key
 		String[] parts = tokenString.split("\\.");
 		String headerString = new String(Base64.getDecoder().decode(parts[0]));
 		Map<String, String> header = objectMapper.readValue(headerString, new TypeReference<>() {});
@@ -29,11 +36,15 @@ public class JwtService {
 
 		Map<String, Object> key = app.getJsonWebKey(kid);
 
-		// TODO create public key for verification
+		// create public key for verification
+		BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode((String) key.get("n")));
+		BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode((String) key.get("e")));
+		RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(modulus, exponent);
+		PublicKey publicKey = KeyFactory.getInstance("RSA")
+			.generatePublic(publicKeySpec);
 
-		// TODO return token if valid
-
-		return null;
+		// return token if valid
+		return jwtParser.verify(tokenString, publicKey);
 	}
 
 	// this is only for demo purposes, DON'T DO THIS AT HOME!
