@@ -27,4 +27,22 @@ public class ApplicationState {
 		// TODO implement me!
 	}
 
+//	@SuppressWarnings("unchecked")
+//	public Map<String, Object> getJsonWebKey(String kid) {
+//		return ((List<Map<String, Object>>) getJsonWebKeySet().get("keys"))
+//			.stream().filter(key -> key.get("kid").equals(kid)).findFirst().orElseThrow();
+//	}
+//
+//	private Map<String, Object> jsonWebKeySet = Map.of();
+//
+//	@SneakyThrows
+//	private Map<String, Object> getJsonWebKeySet() {
+//		if (jsonWebKeySet.isEmpty()) {
+//			URL jwksUri = new URL((String) openidConfig.get("jwks_uri"));
+//			jsonWebKeySet = objectMapper.readValue(jwksUri, new TypeReference<>() {});
+//			log.debug("Received JSON Web Key Set: {}", jsonWebKeySet);
+//		}
+//		return jsonWebKeySet;
+//	}
+
 }

@@ -4,14 +4,17 @@ import dasniko.client.api.ApiService;
 import dasniko.client.model.ApiResponse;
 import io.quarkus.qute.Template;
 import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -49,6 +52,12 @@ public class QuotesResource {
 			"quote", apiQuote
 		);
 		return Response.ok(index.data(data).render()).build();
+	}
+
+	@GET
+	@Path("logout")
+	public Response logout(@Context HttpServletRequest request, @Context UriInfo uriInfo) {
+		throw new IllegalStateException("Not yet implemented");
 	}
 
 	@POST

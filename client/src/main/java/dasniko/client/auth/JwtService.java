@@ -19,7 +19,7 @@ public class JwtService {
 	ObjectMapper objectMapper;
 
 	JsonWebToken verify(String tokenString) throws Exception {
-		throw new IllegalStateException("Not implemented yet");
+		throw new IllegalStateException("Not yet implemented");
 
 		// TODO find proper key
 
